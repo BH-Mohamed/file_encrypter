@@ -14,5 +14,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "FileEncrypter"
 include ':app'
-include ':data'
-include ':domain'
