@@ -8,9 +8,10 @@ import com.streamwide.fileencrypter.domain.model.File
 data class FileEntity(
     @PrimaryKey(autoGenerate = true) val id: Int,
     val name : String,
-    val size : Int,
+    val size : String,
     val encryptedPath : String,
     val createdAt : String,
+    val extension:String
 )
 
 //mapping
@@ -18,9 +19,9 @@ fun FileEntity.toFile() = File(
     id=id,
     name = name,
     size = size,
-    sizeUnit="Mo",
     path = encryptedPath,
-    createdAt = createdAt
+    createdAt = createdAt,
+    extension = extension
 )
 
 fun File.toFileEntity() = FileEntity(
@@ -28,5 +29,7 @@ fun File.toFileEntity() = FileEntity(
     name = name,
     size = size,
     encryptedPath = path,
-    createdAt = createdAt
+    createdAt = createdAt,
+    extension = extension
+
 )

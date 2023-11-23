@@ -1,12 +1,10 @@
 package com.streamwide.fileencrypter.domain.model
 
 data class File(
-    val id : Int,
+    val id : Int=0,
     val name : String,
-    val size : Int,
-    val sizeUnit : String,
+    val size : String,
     val createdAt : String,
-    val path: String
-){
-    fun getSizeWithUnit() = "$size$sizeUnit"
-}
+    val path: String,
+    val extension : String
+)

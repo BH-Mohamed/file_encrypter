@@ -13,8 +13,9 @@
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="100dp"
         app:cardCornerRadius="12dp"
+        android:id="@+id/card_file"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="10dp"
         tools:context=".presentation.adapter.BalanceAdapter">
@@ -24,18 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/file_image"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/circle"
-                android:padding="10dp"
-                android:src="@drawable/ic_file"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/white" />
+
 
             <TextView
                 android:id="@+id/file_name"
@@ -50,7 +40,7 @@
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/file_creation_date"
                 app:layout_constraintEnd_toStartOf="@+id/file_size"
-                app:layout_constraintStart_toEndOf="@+id/file_image"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed" />
 
@@ -67,20 +57,20 @@
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/file_size"
-                app:layout_constraintStart_toEndOf="@+id/file_image"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/file_name" />
 
             <TextView
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:text="@{file.sizeWithUnit}"
+                android:text="@{file.size}"
                 android:layout_marginEnd="8dp"
                 android:textColor="@color/white"
                 android:fontFamily="sans-serif"
                 android:gravity="center"
                 android:paddingVertical="10dp"
-                android:paddingHorizontal="24dp"
+                android:paddingHorizontal="16dp"
                 android:background="@drawable/bg_round_left_bottom"
                 android:id="@+id/file_size"
                 android:layout_width="wrap_content"

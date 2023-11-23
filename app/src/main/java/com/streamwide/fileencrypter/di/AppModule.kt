@@ -1,9 +1,10 @@
 package com.streamwide.fileencrypter.di
 
 import android.content.Context
-import com.streamwide.domain.repository.IFileRepository
+import com.streamwide.fileencrypter.domain.repository.IFileRepository
 import com.streamwide.fileencrypter.data.EncryptionFileDB
 import com.streamwide.fileencrypter.data.repository.FileRepository
+import com.streamwide.fileencrypter.encrypter.EncryptionFile
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,8 +28,14 @@ object AppModule {
     @Singleton
     @Provides
     fun repository(
+        @ApplicationContext context: Context,
         database : EncryptionFileDB
-    ): IFileRepository = FileRepository(database.fileDao())
+    ): IFileRepository = FileRepository(context,database.fileDao())
+  @Singleton
+    @Provides
+    fun encrypt(
+      @ApplicationContext context: Context
+    ): EncryptionFile = EncryptionFile(context)
 
 
 }

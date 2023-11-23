@@ -1,7 +1,7 @@
-package com.streamwide.domain.repository
+package com.streamwide.fileencrypter.domain.repository
 
-import com.streamwide.domain.model.File
-import com.streamwide.domain.model.Resource
+import com.streamwide.fileencrypter.domain.model.File
+import com.streamwide.fileencrypter.domain.model.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface IFileRepository {
