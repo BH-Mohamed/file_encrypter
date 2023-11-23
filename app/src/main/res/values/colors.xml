@@ -14,5 +14,7 @@
 
     <color name="primary_blue">#0065B3</color>
     <color name="gray_text">#979797</color>
+    <color name="red">#EE2538</color>
+    <color name="transparent">#80969696</color>
 
 </resources>

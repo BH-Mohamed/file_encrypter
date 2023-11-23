@@ -17,7 +17,7 @@ import javax.crypto.spec.SecretKeySpec
 
 class EncryptionFile(val context: Context) {
 
-   private val securedPreferences: SharedPreferences by lazy {
+    private val securedPreferences: SharedPreferences by lazy {
         val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
         EncryptedSharedPreferences.create(
             "Secured_prefs",
@@ -28,16 +28,16 @@ class EncryptionFile(val context: Context) {
         )
     }
 
-    fun saveFile(fileData: ByteArray, path: String):File {
+    fun saveFile(fileData: ByteArray, path: String): File {
         val file = File(path)
         val bos = BufferedOutputStream(FileOutputStream(file, false))
         bos.write(fileData)
         bos.flush()
         bos.close()
-        return  file
+        return file
     }
 
-    fun encryptFile(  fileData: ByteArray): ByteArray {
+    fun encryptFile(fileData: ByteArray): ByteArray {
         val data = getSecretKey().encoded
         val sKeySpec = SecretKeySpec(data, 0, data.size, "AES")
         val cipher = Cipher.getInstance("AES", "BC")
@@ -45,7 +45,7 @@ class EncryptionFile(val context: Context) {
         return cipher.doFinal(fileData)
     }
 
-     fun decryptEncryptedFile(filesDir : File): ByteArray {
+    fun decryptEncryptedFile(filesDir: File): ByteArray {
         val filePath = filesDir.absolutePath
         val fileData = readFile(filePath)
         val secretKey = getSecretKey()
@@ -60,20 +60,20 @@ class EncryptionFile(val context: Context) {
         return keyGenerator?.generateKey()
     }
 
-    private fun saveSecretKey(sharedPref : SharedPreferences, secretKey: SecretKey): String {
+    private fun saveSecretKey(sharedPref: SharedPreferences, secretKey: SecretKey): String {
         val encodedKey = Base64.encodeToString(secretKey.encoded, Base64.NO_WRAP)
         sharedPref.edit().putString("AppConstants.secretKeyPref", encodedKey).apply()
 
         return encodedKey
     }
 
-     private fun readFile(filePath: String): ByteArray {
+    private fun readFile(filePath: String): ByteArray {
         val file = File(filePath)
+
         val fileContents = file.readBytes()
         val inputBuffer = BufferedInputStream(
             FileInputStream(file)
         )
-
         inputBuffer.read(fileContents)
         inputBuffer.close()
 
@@ -104,6 +104,5 @@ class EncryptionFile(val context: Context) {
         decrypted = cipher.doFinal(fileData)
         return decrypted
     }
-
 
 }

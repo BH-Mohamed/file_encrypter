@@ -31,7 +31,7 @@ class FileRepository(
     override suspend fun getFiles() = flow {
         try {
             fileDao.getFiles().collect{
-                emit(Resource.Success(it.map { it.toFile() }.toList()))
+                emit(Resource.Success(it.map { it.toFile() }.sortedByDescending { it.createdAt }.toList()))
             }
         }catch (e : Exception){
             e.printStackTrace()

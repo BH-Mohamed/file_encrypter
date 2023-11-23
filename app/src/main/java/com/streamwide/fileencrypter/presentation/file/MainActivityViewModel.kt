@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val repository: IFileRepository,
-    private val encryptor: EncryptionFile
+    val encryptor: EncryptionFile
 ) : BaseViewModel() {
 
     val filesObserver = MutableStateFlow<Resource<List<File>>?>(null)
@@ -75,6 +75,15 @@ class MainActivityViewModel @Inject constructor(
             repository.getFiles().collect{
                 filesObserver.value = it
             }
+        }
+    }
+
+    fun deleteFile(file: File){
+
+        launchOnUI {
+            filesObserver.value = Resource.Loading()
+
+            repository.removeFile(file).collect{}
         }
     }
 }

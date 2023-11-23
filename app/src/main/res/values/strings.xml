@@ -6,4 +6,5 @@
     <string name="error_insert_file">A problem occurred while saving file</string>
     <string name="error_fetch_file">Error occurred while fetching filed</string>
     <string name="error_deleting_file">A problem occurred when deleting file</string>
+    <string name="file_couldnt_open">No application found to open the file</string>
 </resources>

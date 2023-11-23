@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -49,18 +50,13 @@ fun ByteArray.sizeValue() : String{
 }
 
 fun randomString(): String {
-    val generator = Random()
-    val randomStringBuilder = StringBuilder()
-    val randomLength: Int = generator.nextInt(120)
-    var tempChar: Char
-    for (i in 0 until randomLength) {
-        tempChar = (generator.nextInt(96) + 32).toChar()
-        randomStringBuilder.append(tempChar)
-    }
-    return randomStringBuilder.toString()
+    val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+    return (1..20)
+        .map { allowedChars.random() }
+        .joinToString("")
 }
 
-fun Calendar.formatDate( format : String = "dd-MM-yyyy HH:mm:ss"): String{
+fun Calendar.formatDate( format : String = "dd-MM-yyyy HH:mm"): String{
     val sdfServer = SimpleDateFormat(format, Locale.FRANCE)
     return try {
           sdfServer.format(time)
@@ -68,4 +64,25 @@ fun Calendar.formatDate( format : String = "dd-MM-yyyy HH:mm:ss"): String{
         ""
     }
 
+}
+
+fun deleteDirectory(directory: File): Boolean {
+    if (directory.exists()) {
+        val files = directory.listFiles()
+
+        if (files != null) {
+            for (file in files) {
+                if (file.isDirectory) {
+                    // Recursive call for subdirectories
+                    deleteDirectory(file)
+                } else {
+                    // Delete file
+                    file.delete()
+                }
+            }
+        }
+    }
+
+    // Delete the empty directory or the directory with its contents removed
+    return directory.delete()
 }
