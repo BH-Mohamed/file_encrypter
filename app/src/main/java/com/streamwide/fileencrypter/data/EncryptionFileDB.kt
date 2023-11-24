@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.streamwide.fileencrypter.data.dao.FileDao
 import com.streamwide.fileencrypter.data.entity.FileEntity
 
-@Database(entities = [FileEntity::class], version = 3, exportSchema = false)
+@Database(entities = [FileEntity::class], version = 4, exportSchema = false)
 abstract class EncryptionFileDB : RoomDatabase() {
 
     abstract fun fileDao(): FileDao

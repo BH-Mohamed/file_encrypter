@@ -1,12 +1,10 @@
 package com.streamwide.fileencrypter.presentation.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.streamwide.fileencrypter.databinding.ItemFileBinding
 import com.streamwide.fileencrypter.domain.model.File
-import com.streamwide.fileencrypter.presentation.file.FilesFragment
 
 
 class FileAdapter(

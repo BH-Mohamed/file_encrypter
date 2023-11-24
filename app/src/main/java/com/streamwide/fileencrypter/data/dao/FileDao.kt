@@ -20,4 +20,7 @@ interface FileDao {
     @Query("SELECT * FROM File ORDER BY createdAt")
     fun getFiles(): Flow<MutableList<FileEntity>>
 
+    @Query("SELECT * FROM File WHERE id=:id")
+    fun getFileById(id : Int): Flow<FileEntity>
+
 }

@@ -28,6 +28,8 @@ class EncryptionFile(val context: Context) {
         )
     }
 
+    @Throws(Exception::class)
+
     fun saveFile(fileData: ByteArray, path: String): File {
         val file = File(path)
         val bos = BufferedOutputStream(FileOutputStream(file, false))
@@ -37,6 +39,7 @@ class EncryptionFile(val context: Context) {
         return file
     }
 
+    @Throws(Exception::class)
     fun encryptFile(fileData: ByteArray): ByteArray {
         val data = getSecretKey().encoded
         val sKeySpec = SecretKeySpec(data, 0, data.size, "AES")
@@ -67,6 +70,7 @@ class EncryptionFile(val context: Context) {
         return encodedKey
     }
 
+    @Throws(Exception::class)
     private fun readFile(filePath: String): ByteArray {
         val file = File(filePath)
 
@@ -97,6 +101,7 @@ class EncryptionFile(val context: Context) {
         return originalKey
     }
 
+    @Throws(Exception::class)
     private fun decrypt(yourKey: SecretKey, fileData: ByteArray): ByteArray {
         val decrypted: ByteArray
         val cipher = Cipher.getInstance("AES", "BC")

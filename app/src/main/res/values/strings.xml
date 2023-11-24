@@ -1,10 +1,18 @@
 <resources>
-    <string name="app_name">FileEncrypter</string>
+    <string name="app_name">FileEncryptor</string>
     <string name="welcome_text">Welcome to your secret files</string>
     <string name="add_file_text">add file</string>
-    <string name="secure_file_text">Add your file to the encrypted folder and enjoy your privacy</string>
     <string name="error_insert_file">A problem occurred while saving file</string>
     <string name="error_fetch_file">Error occurred while fetching filed</string>
     <string name="error_deleting_file">A problem occurred when deleting file</string>
     <string name="file_couldnt_open">No application found to open the file</string>
+    <string name="welcome_empty_list">Welcome to your secure folder, where you can encrypt your secret files. to import a file please click on "Import file"</string>
+    <string name="import_file">Import File</string>
+    <string name="max_size">Please ensure your file size is below 500 MB for successful import</string>
+    <string name="file_name">File name: %1$s</string>
+    <string name="created_at">Created At: %1$s</string>
+    <string name="file_size">File size: %1$s</string>
+    <string name="open_the_file">Open the file</string>
+    <string name="detail">Detail</string>
+    <string name="delete">Remove from secure folder</string>
 </resources>

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/filesFragment"
-        android:name="com.streamwide.fileencrypter.presentation.file.FilesFragment"
+        android:name="com.streamwide.fileencrypter.presentation.fragment.FilesFragment"
         android:label="fragment_files"
         tools:layout="@layout/fragment_files" >
         <action
@@ -16,7 +16,11 @@
     </fragment>
     <fragment
         android:id="@+id/addFileFragment"
-        android:name="com.streamwide.fileencrypter.presentation.file.AddFileFragment"
+        android:name="com.streamwide.fileencrypter.presentation.fragment.DetailFileFragment"
         android:label="fragment_add_file"
-        tools:layout="@layout/fragment_add_file" />
+        tools:layout="@layout/fragment_detail_file" >
+        <argument
+            android:name="fileId"
+            app:argType="integer" />
+    </fragment>
 </navigation>

@@ -1,30 +1,29 @@
-package com.streamwide.fileencrypter.presentation.file
+package com.streamwide.fileencrypter.presentation.fragment
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.MimeTypeMap
 import android.widget.Toast
-import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.streamwide.fileencrypter.R
 import com.streamwide.fileencrypter.databinding.FragmentFilesBinding
 import com.streamwide.fileencrypter.domain.model.File
 import com.streamwide.fileencrypter.domain.model.Resource
-import com.streamwide.fileencrypter.filePicker.FilePicker
+import com.streamwide.fileencrypter.fileHelper.FileOpener
+import com.streamwide.fileencrypter.fileHelper.FilePicker
 import com.streamwide.fileencrypter.presentation.adapter.FileAdapter
 import com.streamwide.fileencrypter.presentation.base.BaseFragment
 import com.streamwide.fileencrypter.presentation.dialog.FilePopupAction
+import com.streamwide.fileencrypter.presentation.viewmodel.MainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -34,7 +33,9 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
     private lateinit var binding: FragmentFilesBinding
     private lateinit var adapter: FileAdapter
     private val files = ArrayList<File>()
-    private val filePicker: FilePicker = FilePicker(this, this)
+
+    private val filePicker = FilePicker(this, this)
+    private val fileOpener = FileOpener(this)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,7 +44,6 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
         // Inflate the layout for this fragment
         return FragmentFilesBinding.inflate(inflater).also { binding = it }.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,6 +55,7 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
         viewModel.getFilesList()
 
         binding.fabAddFile.setOnClickListener(this)
+        binding.btnImport.setOnClickListener(this)
 
     }
 
@@ -63,8 +64,14 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
         lifecycleScope.launch {
             viewModel.saveFileObserver.collect {
 
-                binding.progressSavingFile.isVisible = it is Resource.Loading
-                binding.imageFolder.visibility = if(it is Resource.Loading) View.INVISIBLE else View.VISIBLE
+                if(files.isEmpty()){
+                    binding.contentListEmpty.isVisible = false
+                    binding.progress.isVisible = true
+                }else{
+                    binding.progressSavingFile.isVisible = it is Resource.Loading
+                    binding.imageFolder.visibility = if(it is Resource.Loading) View.INVISIBLE else View.VISIBLE
+
+                }
 
                 if (it is Resource.Error) {
                     Toast.makeText(requireContext(),it.message,Toast.LENGTH_LONG).show()
@@ -80,18 +87,20 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
                     files.clear()
                     files.addAll(it.data ?: listOf())
                     adapter.notifyDataSetChanged()
+
+                    binding.contentListEmpty.isVisible = files.isEmpty()
+                    binding.contentListNotEmpty.isVisible = files.isNotEmpty()
                 }
 
             }
         }
     }
 
-
     override fun onClick(v: View?) {
         super.onClick(v)
         when (v?.id) {
-            R.id.fab_add_file -> {
-                filePicker.importFile(requireActivity())
+            R.id.fab_add_file,R.id.btn_import -> {
+                filePicker.pickFile(requireActivity())
             }
         }
     }
@@ -109,31 +118,29 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
         //open popup actions
         FilePopupAction(requireActivity(), file, object : FilePopupAction.FilePopupListener {
 
-            override fun openFile(file: File) {
+            override fun openFile(file: File,popup: FilePopupAction) {
 
-                //decrypt file
-                val decryptedByteArray =
-                    viewModel.encryptor.decryptEncryptedFile(java.io.File(file.path))
+                popup.loading(true)
+                // lunch  Coroutine with IO dispatcher to decrypt the file
+                // return the decrypted file with a callback function
+                viewModel.decryptFile(requireContext(),file){decryptedFile->
 
-                //save decrypted file into temp dir
-                val decryptedFile = viewModel.encryptor.saveFile(
-                    decryptedByteArray,
-                    (requireActivity().getExternalFilesDir("temp")?.absolutePath?:"")+"/${file.name}"
-                )
+                    //dismiss popup via main thread
+                    lifecycleScope.launch {
+                        launch(Dispatchers.Main) {
+                            popup.dismiss()
+                        }
+                    }
+                    //open file with system and deleted when closed
+                    fileOpener.openFileFromSystem(requireActivity(),decryptedFile)
 
-                //open temp file on system
-                //note : all temp file will be deleted in onDestroy activity
-                val intent = Intent(Intent.ACTION_VIEW)
-                val fileProviderPath = FileProvider.getUriForFile(
-                    requireContext(),
-                    requireActivity().packageName + ".fileprovider",
-                    decryptedFile
-                )
-                intent.setDataAndType(fileProviderPath, MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension.lowercase(Locale.ROOT)))
-                intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                requireActivity().startActivity(intent)
+                }
 
+            }
 
+            override fun cancelOpenFile() {
+                //cancel job decryption file if exists
+                viewModel.cancelDecryptingFile()
 
             }
 
@@ -142,7 +149,7 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
             }
 
             override fun showDetail(file: File) {
-
+                findNavController().navigate(FilesFragmentDirections.actionFilesFragmentToAddFileFragment(file.id))
             }
 
         }).show()

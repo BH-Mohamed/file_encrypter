@@ -1,4 +1,4 @@
-package com.streamwide.fileencrypter.presentation.file
+package com.streamwide.fileencrypter.presentation.activity
 
 import android.os.Bundle
 import android.util.Log

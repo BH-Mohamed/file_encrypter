@@ -1,4 +1,4 @@
-package com.streamwide.fileencrypter.filePicker
+package com.streamwide.fileencrypter.fileHelper
 
 import android.Manifest
 import android.app.Activity
@@ -16,7 +16,7 @@ class FilePicker(
       onImagePickedListener: OnFilePickerListener
 ) {
 
-    lateinit var activity: Activity
+    private lateinit var activity: Activity
 
     interface OnFilePickerListener {
         fun onFilePicked(uri: Uri)
@@ -28,7 +28,7 @@ class FilePicker(
     ) { permissions ->
 
         if(permissions.entries.all { it.value }){
-            importFile(activity)
+            pickFile(activity)
         }
     }
 
@@ -47,9 +47,7 @@ class FilePicker(
 
         }
 
-
-
-    fun importFile(activity: Activity) {
+    fun pickFile(activity: Activity) {
         this.activity = activity
         if (checkPermission()) {
             var chooseFile = Intent(Intent.ACTION_GET_CONTENT)

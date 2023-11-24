@@ -9,8 +9,6 @@ import kotlinx.coroutines.launch
 
 abstract class BaseViewModel : ViewModel(){
 
-    fun launchOnUI(block: suspend CoroutineScope.() -> Unit)  {
-        CoroutineScope(Dispatchers.IO).launch { block() }
-    }
+    fun launchOnUI(block: suspend CoroutineScope.() -> Unit) = CoroutineScope(Dispatchers.IO).launch { block() }
 
  }

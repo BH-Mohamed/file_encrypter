@@ -5,7 +5,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.widget.PopupWindow
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.streamwide.fileencrypter.databinding.BottomSheetFileBinding
+import androidx.core.view.isVisible
+import com.streamwide.fileencrypter.databinding.PopupFileActionBinding
 import com.streamwide.fileencrypter.domain.model.File
 
 class FilePopupAction(
@@ -16,19 +17,20 @@ class FilePopupAction(
 
 
     interface FilePopupListener {
-        fun openFile(file: File)
+        fun openFile(file: File,popup : FilePopupAction)
+        fun cancelOpenFile()
         fun deleteFile(file: File)
         fun showDetail(file: File)
     }
 
     private var popupWindow: PopupWindow? = null
+    private lateinit var bindingPopup: PopupFileActionBinding
 
     fun show() {
         if (popupWindow == null) {
             val inflater: LayoutInflater =
                 activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val bindingPopup: BottomSheetFileBinding = BottomSheetFileBinding.inflate(inflater)
-
+            bindingPopup = PopupFileActionBinding.inflate(inflater)
             popupWindow = PopupWindow(
                 bindingPopup.root,
                 ConstraintLayout.LayoutParams.MATCH_PARENT,
@@ -39,8 +41,7 @@ class FilePopupAction(
             bindingPopup.file = file
 
             bindingPopup.btnOpenFile.setOnClickListener {
-                listener.openFile(file)
-                dismiss()
+                listener.openFile(file,this@FilePopupAction)
             }
 
             bindingPopup.btnDetail.setOnClickListener {
@@ -59,8 +60,13 @@ class FilePopupAction(
                 popupWindow?.dismiss()
             }
 
+            bindingPopup.btnCancel.setOnClickListener {
+                popupWindow?.dismiss()
+            }
+
 
             popupWindow?.setOnDismissListener {
+                listener.cancelOpenFile()
                 popupWindow = null
             }
 
@@ -69,8 +75,14 @@ class FilePopupAction(
         }
     }
 
-    fun dismiss() {
+     fun dismiss() {
         popupWindow?.dismiss()
+    }
+
+    fun loading(isLoading : Boolean= true) {
+
+        bindingPopup.contentActions.isVisible = !isLoading
+        bindingPopup.contentLoading.isVisible = isLoading
     }
 
 }

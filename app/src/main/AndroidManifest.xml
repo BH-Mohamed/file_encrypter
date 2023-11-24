@@ -16,10 +16,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:name=".MyApplication"
+        android:largeHeap="true"
         android:theme="@style/Theme.FileEncrypter"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.file.MainActivity"
+            android:name=".presentation.activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -3,6 +3,8 @@ package com.streamwide.fileencrypter.data.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.streamwide.fileencrypter.domain.model.File
+import com.streamwide.fileencrypter.presentation.commons.formatDate
+import java.util.Calendar
 
 @Entity(tableName="File")
 data class FileEntity(
@@ -10,7 +12,7 @@ data class FileEntity(
     val name : String,
     val size : String,
     val encryptedPath : String,
-    val createdAt : String,
+    val createdAt : Long,
     val extension:String
 )
 
@@ -20,7 +22,7 @@ fun FileEntity.toFile() = File(
     name = name,
     size = size,
     path = encryptedPath,
-    createdAt = createdAt,
+    createdAt = Calendar.getInstance().also { it.timeInMillis=createdAt },
     extension = extension
 )
 
@@ -29,7 +31,7 @@ fun File.toFileEntity() = FileEntity(
     name = name,
     size = size,
     encryptedPath = path,
-    createdAt = createdAt,
+    createdAt = createdAt.timeInMillis,
     extension = extension
 
 )

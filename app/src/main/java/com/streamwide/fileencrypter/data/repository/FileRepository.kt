@@ -49,4 +49,15 @@ class FileRepository(
         }
     }
 
+    override suspend fun getFileById(fileId: Int) = flow {
+        try {
+            fileDao.getFileById(fileId).collect{
+                emit(Resource.Success(it.toFile()))
+            }
+        }catch (e : Exception){
+            e.printStackTrace()
+            emit(Resource.Error(context.getString(R.string.error_fetch_file)))
+        }
+    }
+
 }

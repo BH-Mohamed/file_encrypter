@@ -12,5 +12,6 @@ interface IFileRepository {
 
    suspend fun removeFile(file: File) : Flow<Resource<Boolean>>
 
+   suspend fun getFileById(fileId: Int) : Flow<Resource<File>>
 
 }
