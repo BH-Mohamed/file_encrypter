@@ -13,7 +13,11 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-
+/**
+ * class used to encrypt and decrypt files
+ * the encryption and decryption with secret key that is stored generated randomly and saved in
+ * encryptedSharedPreference.
+ */
 class EncryptionFile(val context: Context) {
 
     private val secretKeyPref = "encryption_secret_key"
