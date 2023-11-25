@@ -22,25 +22,43 @@ class MainActivityViewModel @Inject constructor(
     private val encryptor: EncryptionFile
 ) : BaseViewModel() {
 
+    //observe changes on listing files
     val filesObserver = MutableStateFlow<Resource<List<File>>?>(null)
+    //observe saving and encrypt file
     val saveFileObserver = MutableStateFlow<Resource<Boolean>?>(null)
+    //observe get file by id
     val fileDetailObserver = MutableStateFlow<Resource<File>?>(null)
 
+    //used to show loading progress for multi file insertion
+    var currentProcessingFile : Int =0
+    /**
+     * encrypt file and save it into DB
+     */
     fun encryptFileAndSaveIt(context: Context, uri: Uri) {
         launchOnUI {
+            // Notify observer that the file saving process is in progress
             saveFileObserver.value = Resource.Loading()
+            updateCurrentProcessingData(1)
+
 
             try {
+                // Retrieve the byte array representation of the file from the URI
                 val fileByteArray = uri.toFileByteArray(context)!!
+                // Encrypt the file byte array
                 val encryptedFile = encryptor.encryptFile(fileByteArray)
 
-                //get directory file
+                // Get the directory path for storing encrypted files
                 val dirPath = context.getExternalFilesDir("secure")?.absoluteFile ?: ""
+                // Generate a random file name
                 val fileName = uri.fileName(context)
 
+                // Construct the full path for the encrypted file
                 val secureFilePath = "$dirPath/${randomString()}.txt"
-                encryptor.saveFile(encryptedFile, secureFilePath)
 
+                // Save the encrypted file to the specified path (the file saved with a random name)
+                val encryptFile  = encryptor.saveFile(encryptedFile, secureFilePath)
+
+                // Create a File object representing the encrypted file
                 val file = File(
                     name = fileName,
                     extension = fileName.split('.')[1],
@@ -49,10 +67,16 @@ class MainActivityViewModel @Inject constructor(
                     path = secureFilePath
                 )
 
+                // Attempt to add the encrypted file to the secure folder
                 repository.addFileToSecureFolder(file).collect {
+                    updateCurrentProcessingData(-1)
+
                     when (it) {
                         is Resource.Error -> {
                             //delete file if created
+                            if(encryptFile.exists()) encryptFile.delete()
+                            saveFileObserver.value =
+                                Resource.Error(context.getString(R.string.error_insert_file))
                         }
 
                         is Resource.Success -> {
@@ -65,11 +89,13 @@ class MainActivityViewModel @Inject constructor(
 
             }catch (e : MaxFileSizeException){
                 e.printStackTrace()
+                updateCurrentProcessingData(-1)
                 saveFileObserver.value =
                     Resource.Error(e.message?:"")
             }
             catch (e: Exception) {
                 e.printStackTrace()
+                updateCurrentProcessingData(-1)
                 saveFileObserver.value =
                     Resource.Error(context.getString(R.string.error_insert_file))
             }
@@ -79,6 +105,14 @@ class MainActivityViewModel @Inject constructor(
 
     }
 
+    private fun updateCurrentProcessingData(processing : Int){
+        currentProcessingFile+=processing
+        if (currentProcessingFile<0)currentProcessingFile=0
+    }
+
+    /**
+     * get list of files
+     */
     fun getFilesList() {
 
         launchOnUI {
@@ -128,7 +162,6 @@ class MainActivityViewModel @Inject constructor(
                 decryptedFile.also {if (it.exists()) it.delete() }
             }
         }
-
 
     fun cancelDecryptingFile() {
         decryptedFileCoroutineScope?.cancel()

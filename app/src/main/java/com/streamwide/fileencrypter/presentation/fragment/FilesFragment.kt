@@ -51,7 +51,6 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
         adapter = FileAdapter(files, this)
         binding.filesList.adapter = adapter
 
-        callObservers()
         viewModel.getFilesList()
 
         binding.fabAddFile.setOnClickListener(this)
@@ -59,17 +58,19 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
 
     }
 
-    private fun callObservers() {
+    //listeners to observers
+    override fun callObservers() {
 
         lifecycleScope.launch {
             viewModel.saveFileObserver.collect {
+
 
                 if(files.isEmpty()){
                     binding.contentListEmpty.isVisible = false
                     binding.progress.isVisible = true
                 }else{
-                    binding.progressSavingFile.isVisible = it is Resource.Loading
-                    binding.imageFolder.visibility = if(it is Resource.Loading) View.INVISIBLE else View.VISIBLE
+                    binding.progressSavingFile.isVisible = it is Resource.Loading || viewModel.currentProcessingFile>0
+                    binding.imageFolder.visibility = if(it is Resource.Loading || viewModel.currentProcessingFile>0) View.INVISIBLE else View.VISIBLE
 
                 }
 
@@ -100,6 +101,7 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
         super.onClick(v)
         when (v?.id) {
             R.id.fab_add_file,R.id.btn_import -> {
+                //open file picker
                 filePicker.pickFile(requireActivity())
             }
         }
@@ -110,7 +112,7 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
     }
 
     override fun onFilePickerFailed() {
-        //msg failed file
+        Toast.makeText(requireContext(),getString(R.string.error_fetch_file),Toast.LENGTH_LONG).show()
     }
 
     override fun onFileClickListener(file: File) {
@@ -145,10 +147,12 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
             }
 
             override fun deleteFile(file: File) {
+                //delete encrypted file from storage and DB
                 viewModel.deleteFile(file)
             }
 
             override fun showDetail(file: File) {
+                //navigate to file detail
                 findNavController().navigate(FilesFragmentDirections.actionFilesFragmentToAddFileFragment(file.id))
             }
 
@@ -157,5 +161,10 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
 
     }
 
-
+    override fun onStop() {
+        //stop progressing
+        //cancel coroutine job if exists
+        viewModel.cancelDecryptingFile()
+        super.onStop()
+    }
 }

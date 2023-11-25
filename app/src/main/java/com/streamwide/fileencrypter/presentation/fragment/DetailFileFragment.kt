@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -37,8 +38,6 @@ class DetailFileFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        callObservers()
-
         viewModel.getFileById(DetailFileFragmentArgs.fromBundle(requireArguments()).fileId)
 
         binding.btnBack.setOnClickListener(this)
@@ -47,7 +46,8 @@ class DetailFileFragment : BaseFragment() {
 
     }
 
-    private fun callObservers() {
+    //listeners to observers
+    override fun callObservers() {
         lifecycleScope.launch {
             viewModel.fileDetailObserver.collect {
                 if (it is Resource.Success) {
@@ -69,22 +69,35 @@ class DetailFileFragment : BaseFragment() {
             }
             R.id.btn_open_file -> {
 
+                binding.progress.isVisible=true
+                binding.btnOpenFile.visibility=View.INVISIBLE
 
                 // lunch  Coroutine with IO dispatcher to decrypt the file
                 // return the decrypted file with a callback function
                 viewModel.decryptFile(requireContext(), file) { decryptedFile ->
+                    lifecycleScope.launch {
+                        binding.progress.isVisible=false
+                        binding.btnOpenFile.visibility=View.VISIBLE
+                    }
 
                     //open file with system and deleted when closed
                     fileOpener.openFileFromSystem(requireActivity(), decryptedFile)
 
                 }
-
-
             }
             R.id.btn_delete -> {
                 viewModel.deleteFile(file)
                 findNavController().popBackStack()
             }
         }
+    }
+
+    override fun onStop() {
+        //stop progressing
+        binding.progress.isVisible=false
+        binding.btnOpenFile.visibility=View.VISIBLE
+        //cancel coroutine job
+        viewModel.cancelDecryptingFile()
+        super.onStop()
     }
 }

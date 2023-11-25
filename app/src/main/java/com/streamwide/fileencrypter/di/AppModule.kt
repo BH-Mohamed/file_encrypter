@@ -12,7 +12,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-//IMPORT
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -31,6 +30,7 @@ object AppModule {
         @ApplicationContext context: Context,
         database : EncryptionFileDB
     ): IFileRepository = FileRepository(context,database.fileDao())
+
   @Singleton
     @Provides
     fun encrypt(

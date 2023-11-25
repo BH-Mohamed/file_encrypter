@@ -18,50 +18,67 @@ class FilePicker(
 
     private lateinit var activity: Activity
 
+    // Interface to communicate file picking events
     interface OnFilePickerListener {
         fun onFilePicked(uri: Uri)
         fun onFilePickerFailed()
     }
 
+    // Activity result launcher for multiple permissions
     private val requestPermissionLauncher = fragment.registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
 
         if(permissions.entries.all { it.value }){
+            // All required permissions are granted, proceed to pick a file
             pickFile(activity)
         }
     }
 
+    // Activity result launcher for file picking
     private var resultFilePickerLauncher =
         fragment.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
 
                 try {
                     val fileUri = result!!.data!!.data!!
+                    // Notify the listener that a file has been picked
                     onImagePickedListener.onFilePicked(fileUri)
                 }catch (e : Exception){
                     e.printStackTrace()
+                    // Notify the listener about the file picking failure
                     onImagePickedListener.onFilePickerFailed()
                 }
             }
 
         }
 
+    /**
+     *Function to initiate the file picking process
+     */
     fun pickFile(activity: Activity) {
         this.activity = activity
+
+        // Check for permissions before launching the file picker
         if (checkPermission()) {
             var chooseFile = Intent(Intent.ACTION_GET_CONTENT)
             chooseFile.type = "*/*"
             chooseFile = Intent.createChooser(chooseFile, "Choose a file")
+            // Launch the file picker intent
             resultFilePickerLauncher.launch(chooseFile)
         }
 
     }
 
+    /**
+     * Function to check and request permissions
+
+     */
     private fun checkPermission(): Boolean {
 
         val listPermissionNeeded: MutableList<String> = ArrayList()
 
+        // Add necessary permissions based on Android version
         arrayListOf<String>().also {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 it.add(Manifest.permission.READ_MEDIA_VIDEO)
@@ -74,6 +91,7 @@ class FilePicker(
                 }
             }
         }.forEach { permissions ->
+            // Check if each permission is granted
             if (ContextCompat.checkSelfPermission(
                     activity,
                     permissions
@@ -83,6 +101,7 @@ class FilePicker(
             }
         }
 
+        // Request permissions if needed
         if (listPermissionNeeded.isNotEmpty()) {
 
             requestPermissionLauncher.launch(
@@ -91,6 +110,8 @@ class FilePicker(
 
             return false
         }
+
+        // Permissions are granted
         return true
     }
 

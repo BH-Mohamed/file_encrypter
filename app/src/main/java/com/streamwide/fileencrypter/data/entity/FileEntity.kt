@@ -3,7 +3,6 @@ package com.streamwide.fileencrypter.data.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.streamwide.fileencrypter.domain.model.File
-import com.streamwide.fileencrypter.presentation.commons.formatDate
 import java.util.Calendar
 
 @Entity(tableName="File")
@@ -16,7 +15,7 @@ data class FileEntity(
     val extension:String
 )
 
-//mapping
+/**mapping the entity from db into model**/
 fun FileEntity.toFile() = File(
     id=id,
     name = name,
@@ -26,6 +25,7 @@ fun FileEntity.toFile() = File(
     extension = extension
 )
 
+/**mapping the model into entity**/
 fun File.toFileEntity() = FileEntity(
     id=id,
     name = name,

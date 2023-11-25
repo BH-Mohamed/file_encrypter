@@ -6,6 +6,5 @@ import androidx.appcompat.app.AppCompatActivity
 abstract class BaseActivity : AppCompatActivity(), View.OnClickListener{
 
     override fun onClick(v: View?) {
-
     }
 }

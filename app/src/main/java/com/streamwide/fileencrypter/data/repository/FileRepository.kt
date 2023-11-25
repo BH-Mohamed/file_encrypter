@@ -39,7 +39,7 @@ class FileRepository(
         }
     }
 
-    override suspend fun removeFile(file: File) =flow<Resource<Boolean>> {
+    override suspend fun removeFile(file: File) =flow {
         try {
             fileDao.delete(file.toFileEntity())
             emit(Resource.Success(true))

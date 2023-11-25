@@ -9,17 +9,21 @@ import androidx.fragment.app.Fragment
 import java.io.File
 import java.util.Locale
 
-
+/**
+ * class used to open file via system
+ */
 class FileOpener(
     fragment: Fragment,
 ) {
 
+    // File reference to track the opened file
     private var file: File?=null
 
+    // Activity result launcher used to delete the file when it's closed
     private var resultFileOpenerLauncher =
-        fragment.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        fragment.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             try {
-                // if file exists in storage
+                // Delete the file if it exists in storage
                 file?.also {
                     if (it.exists()) it.delete()
                 }
@@ -28,6 +32,12 @@ class FileOpener(
             }
     }
 
+    /**
+     * Opens a file from the system using an Intent.
+     *
+     * @param activity The hosting activity.
+     * @param file The file to be opened.
+     */
     fun openFileFromSystem(activity:  Activity,file : File) {
         //open temp file on system
         //note : all temp file will be deleted in onDestroy activity
@@ -39,10 +49,14 @@ class FileOpener(
         )
 
         this.file = file
+        // Set data and type for the intent
         intent.setDataAndType(fileProviderPath, MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension.lowercase(
             Locale.ROOT)))
+
+        // Add read URI permission flag
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
 
+        // Launch the file opener intent
         resultFileOpenerLauncher.launch(intent)
 
 
