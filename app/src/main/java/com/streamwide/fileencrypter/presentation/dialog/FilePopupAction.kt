@@ -68,6 +68,10 @@ class FilePopupAction(
             bindingPopup.btnCancel.setOnClickListener {
                 popupWindow?.dismiss()
             }
+            bindingPopup.contentActions.setOnClickListener {}
+            bindingPopup.contentLoading.setOnClickListener {}
+
+
 
 
             popupWindow?.setOnDismissListener {
