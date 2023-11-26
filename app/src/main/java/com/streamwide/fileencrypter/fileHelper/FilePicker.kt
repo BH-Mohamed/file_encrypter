@@ -72,7 +72,6 @@ class FilePicker(
 
     /**
      * Function to check and request permissions
-
      */
     private fun checkPermission(): Boolean {
 

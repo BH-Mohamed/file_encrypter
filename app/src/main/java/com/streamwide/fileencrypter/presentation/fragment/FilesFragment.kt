@@ -66,8 +66,8 @@ class FilesFragment : BaseFragment(), FilePicker.OnFilePickerListener, FileAdapt
 
 
                 if(files.isEmpty()){
-                    binding.contentListEmpty.isVisible = false
-                    binding.progress.isVisible = true
+                    binding.contentListEmpty.isVisible =  it !is Resource.Loading
+                    binding.progress.isVisible =  it is Resource.Loading
                 }else{
                     binding.progressSavingFile.isVisible = it is Resource.Loading || viewModel.currentProcessingFile>0
                     binding.imageFolder.visibility = if(it is Resource.Loading || viewModel.currentProcessingFile>0) View.INVISIBLE else View.VISIBLE

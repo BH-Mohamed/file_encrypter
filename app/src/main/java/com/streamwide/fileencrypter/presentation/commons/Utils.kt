@@ -7,8 +7,10 @@ import android.os.Build
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.util.Log
 import com.streamwide.fileencrypter.R
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -141,4 +143,24 @@ fun Calendar.formatDate(format: String = "dd-MM-yyyy HH:mm"): String {
     } catch (e: Exception) {
         ""
     }
+}
+
+fun deleteDirectory(directory: File): Boolean {
+    if (directory.exists()) {
+        val files = directory.listFiles()
+        if (files != null) {
+            for (file in files) {
+                if (file.isDirectory) {
+                    // Recursive call for subdirectories
+                    deleteDirectory(file)
+                } else {
+                    // Delete file
+                    file.delete()
+                }
+            }
+        }
+    }
+
+    // Delete the empty directory or the directory with its contents removed
+    return directory.delete()
 }

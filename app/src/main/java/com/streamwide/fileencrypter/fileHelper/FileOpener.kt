@@ -56,6 +56,9 @@ class FileOpener(
         // Add read URI permission flag
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
 
+        try {
+            file.deleteOnExit()
+        }catch (e : Exception){e.printStackTrace()}
         // Launch the file opener intent
         resultFileOpenerLauncher.launch(intent)
 
