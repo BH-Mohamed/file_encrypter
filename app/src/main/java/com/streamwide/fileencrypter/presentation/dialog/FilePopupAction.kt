@@ -18,9 +18,27 @@ class FilePopupAction(
 
     // Interface to communicate file-related actions
     interface FilePopupListener {
+        /**
+         * open encrypted file in system after decrypted it
+         */
         fun openFile(file: File,popup : FilePopupAction)
+
+        /**
+         * cancel open file by (cancel coroutine) when the file take so long to decrypt and open
+         * for example with size > 10 Mb
+         * the user can cancel the process by pressing cancel button
+         *
+         */
         fun cancelOpenFile()
+
+        /**
+         * delete file from DB and from storage
+         */
         fun deleteFile(file: File)
+
+        /**
+         * navigate to file detail
+         */
         fun showDetail(file: File)
     }
 
@@ -28,7 +46,10 @@ class FilePopupAction(
     private var popupWindow: PopupWindow? = null
     private lateinit var bindingPopup: PopupFileActionBinding
 
-    // Function to show the pop-up window
+    /**
+     * Function to show the pop-up window
+
+     */
     fun show() {
         // Check if the pop-up window is not already shown
         if (popupWindow == null) {
@@ -88,7 +109,9 @@ class FilePopupAction(
         popupWindow?.dismiss()
     }
 
-    // Function to toggle loading state in the pop-up
+    /**
+     * Function to toggle loading state in the pop-up
+     */
     fun loading(isLoading : Boolean= true) {
 
         // Toggle visibility of loading indicators
